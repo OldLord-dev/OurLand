@@ -1,8 +1,7 @@
 using Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
-
-
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -37,6 +36,11 @@ public class PlayerController : MonoBehaviour
         movement = new BlendMove();
         componentBase = VirtualCamera.GetCinemachineComponent(CinemachineCore.Stage.Body);
         capsuleCollider= player.GetComponent<CapsuleCollider>();
+        Scene scene = SceneManager.GetActiveScene();
+        if (scene.name != "MainScene")
+        {
+            isIntroDone = true;
+        }
     }
     void Awake()
     {
@@ -146,13 +150,13 @@ public class PlayerController : MonoBehaviour
             input = Vector3.zero;
         }
         
-        if (anim.GetBool("EndLevel"))
-        {
-            if (inputHandler.interaction&& anim.GetBool("DoneLvl"))
-            {
-                GameManager.NextLevel();
-            }
-        }
+        //if (anim.GetBool("EndLevel"))
+        //{
+        //    if (inputHandler.interaction&& anim.GetBool("DoneLvl"))
+        //    {
+        //        GameManager.NextLevel();
+        //    }
+        //}
     }
         public void OnJump(InputValue value)
     {
