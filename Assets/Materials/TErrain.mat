@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Terrain
+  m_Name: TErrain
   m_Shader: {fileID: -6465566751694194690, guid: 406699f4b2d883d48b41698ed1478d1e,
     type: 3}
   m_ValidKeywords: []

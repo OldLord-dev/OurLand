@@ -26,4 +26,9 @@ public class PlayerTrigger : MonoBehaviour
             anim.SetBool("EndLevel", true);
         }
     }
+
+    public void RootCome()
+    {
+        anim.SetTrigger("IntroEnter");
+    }
 }

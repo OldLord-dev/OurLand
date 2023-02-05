@@ -23,16 +23,18 @@ public class PlayerController : MonoBehaviour
     [Range(0.0f, 0.3f)]
     public float RotationSmoothTime = 0.12f;
     private Animator anim;
-    bool isIntroDone = true;
+    bool isIntroDone = false;
     float targetSpeed;
     public CustomEvent test;
     private GameObject player;
+    private CapsuleCollider capsuleCollider;
     private void Start()
     {
         jump = new Jump();
         pickUp = new PickUp();
         movement = new BlendMove();
         componentBase = VirtualCamera.GetCinemachineComponent(CinemachineCore.Stage.Body);
+        capsuleCollider=GetComponent<CapsuleCollider>();
     }
     void Awake()
     {
@@ -53,6 +55,12 @@ public class PlayerController : MonoBehaviour
     }
     float targetRotation;
     private float _rotationVelocity;
+    public void OnIntroDone()
+    {
+        rb.isKinematic = false;
+        capsuleCollider.enabled = true;
+
+    }
     private void Update()
     {
         GroundedCheck();
@@ -89,7 +97,7 @@ public class PlayerController : MonoBehaviour
     {
         targetSpeed = inputHandler.sprint ? sprint : speed;
         Vector3 inputDirection = new Vector3(inputHandler.move.x, 0.0f, inputHandler.move.y).normalized;
-        if (inputHandler.move != Vector2.zero && isIntroDone)
+        if (inputHandler.move != Vector2.zero && isIntroDone && !anim.GetBool("PickUp"))
         {
             targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
                               mainCamera.transform.eulerAngles.y;
@@ -136,7 +144,7 @@ public class PlayerController : MonoBehaviour
     }
         public void OnJump(InputValue value)
     {
-        if (value.isPressed && Grounded)
+        if (value.isPressed && Grounded && isIntroDone)
         {
             input += Mathf.Sqrt(-2f * Physics.gravity.y * jumpHeight) * Vector3.up;    
             jump.Execute(anim, true);
@@ -177,7 +185,7 @@ public class PlayerController : MonoBehaviour
 
     public void CameraRotation()
     {
-        if (inputHandler.look.sqrMagnitude >= _threshold && !LockCameraPosition)
+        if (inputHandler.look.sqrMagnitude >= _threshold && !LockCameraPosition && isIntroDone)
         {
             float deltaTimeMultiplier = 2.0f;
 
@@ -198,16 +206,13 @@ public class PlayerController : MonoBehaviour
         return Mathf.Clamp(lfAngle, lfMin, lfMax);
     }
 
-    
-
     float cameraDistance;
     CinemachineComponentBase componentBase;
     public CinemachineVirtualCamera VirtualCamera;
 
-
     private void CameraZoom()
     {
-        if (inputHandler.zoom != 0)
+        if (inputHandler.zoom != 0 && isIntroDone)
         {
             cameraDistance = inputHandler.zoom * 0.001f;
             if (componentBase is Cinemachine3rdPersonFollow)
