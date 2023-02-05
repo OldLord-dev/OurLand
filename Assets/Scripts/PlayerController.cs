@@ -148,8 +148,9 @@ public class PlayerController : MonoBehaviour
          if (inputHandler.interaction && anim.GetBool("CanPickUp")&& scene.name != "MainScene")
         {
             pickUp2.Execute(anim, inputHandler.interaction);
-            CinemachineCameraTarget = GameObject.FindGameObjectWithTag("CutScene");
-            virtualCamera.Follow = CinemachineCameraTarget.transform;
+            SceneManager.LoadScene("thank scene");
+           // CinemachineCameraTarget = GameObject.FindGameObjectWithTag("CutScene");
+           // v//irtualCamera.Follow = CinemachineCameraTarget.transform;
 
         }
         else if(inputHandler.interaction && anim.GetBool("CanPickUp"))
