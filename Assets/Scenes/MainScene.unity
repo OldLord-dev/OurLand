@@ -2893,7 +2893,7 @@ PrefabInstance:
     - target: {fileID: 2665482107572118994, guid: 2de1bfe6ebd51714f999af4d15717af0,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 400.00006
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2665482107572118994, guid: 2de1bfe6ebd51714f999af4d15717af0,
         type: 3}
@@ -5022,6 +5022,7 @@ GameObject:
   - component: {fileID: 1484298573}
   - component: {fileID: 1484298572}
   - component: {fileID: 1484298575}
+  - component: {fileID: 1484298576}
   m_Layer: 0
   m_Name: Acid
   m_TagString: Untagged
@@ -5109,6 +5110,18 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: 3da23cdf512599b42881988944f3918c, type: 2}
+--- !u!114 &1484298576
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1484298571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e14d5c1934032047982ce1c9192d273, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!850595691 &1514560128
 LightingSettings:
   m_ObjectHideFlags: 0

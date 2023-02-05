@@ -56,7 +56,7 @@ public class PlayerController : MonoBehaviour
             player = GameObject.FindGameObjectWithTag("Player");
         }
         CinemachineCameraTarget = GameObject.FindGameObjectWithTag("PlayerCameraRoot");
-        Debug.Log(CinemachineCameraTarget);
+      //  Debug.Log(CinemachineCameraTarget);
         rb = player.GetComponent<Rigidbody>();
         inputHandler = GetComponent<InputHandler>();
         anim = player.GetComponent<Animator>();
@@ -145,15 +145,19 @@ public class PlayerController : MonoBehaviour
     }
     public void InputInteractions()
     {
-        if (inputHandler.interaction && anim.GetBool("CanPickUp"))
-        {
-            pickUp.Execute(anim, inputHandler.interaction);
-           
-            input = Vector3.zero;
-        }else if (inputHandler.interaction && anim.GetBool("CanPickUp")&& scene.name != "MainScene")
+         if (inputHandler.interaction && anim.GetBool("CanPickUp")&& scene.name != "MainScene")
         {
             pickUp2.Execute(anim, inputHandler.interaction);
+            CinemachineCameraTarget = GameObject.FindGameObjectWithTag("CutScene");
+            virtualCamera.Follow = CinemachineCameraTarget.transform;
+
         }
+        else if(inputHandler.interaction && anim.GetBool("CanPickUp"))
+            {
+                pickUp.Execute(anim, inputHandler.interaction);
+
+                input = Vector3.zero;
+            }
 
         //if (anim.GetBool("EndLevel"))
         //{

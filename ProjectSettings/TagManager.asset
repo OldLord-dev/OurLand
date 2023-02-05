@@ -9,6 +9,7 @@ TagManager:
   - End
   - Seed
   - Hole2
+  - CutScene
   layers:
   - Default
   - TransparentFX
