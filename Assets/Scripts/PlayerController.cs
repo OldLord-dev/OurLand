@@ -1,3 +1,4 @@
+using Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -15,7 +16,7 @@ public class PlayerController : MonoBehaviour
     private InputHandler inputHandler;
     public Vector3 input;
     private float jumpHeight = 2f;
-    private float GroundedOffset = 1f;
+    public float GroundedOffset = 0f;
     private bool Grounded = true;
     private float GroundedRadius = 0.28f;
     private GameObject mainCamera;
@@ -31,6 +32,7 @@ public class PlayerController : MonoBehaviour
         jump = new Jump();
         pickUp = new PickUp();
         movement = new BlendMove();
+        componentBase = VirtualCamera.GetCinemachineComponent(CinemachineCore.Stage.Body);
     }
     void Awake()
     {
@@ -43,7 +45,7 @@ public class PlayerController : MonoBehaviour
         {
             player = GameObject.FindGameObjectWithTag("Player");
         }
-
+        CinemachineCameraTarget = GameObject.FindGameObjectWithTag("PlayerCameraRoot");
         rb = player.GetComponent<Rigidbody>();
         inputHandler = GetComponent<InputHandler>();
         anim = player.GetComponent<Animator>();
@@ -54,6 +56,7 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         GroundedCheck();
+        CameraZoom();
     }
     void FixedUpdate()
     {
@@ -61,6 +64,7 @@ public class PlayerController : MonoBehaviour
         Move();
         Reducer();
         InputInteractions();
+        CameraRotation();
     }
     private void Reducer()
     {
@@ -92,29 +96,29 @@ public class PlayerController : MonoBehaviour
             float rotation = Mathf.SmoothDampAngle(player.transform.eulerAngles.y, targetRotation, ref _rotationVelocity,
                 RotationSmoothTime);
 
-            //player.transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+            player.transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
             Vector3 targetDirection = Quaternion.Euler(0.0f, targetRotation, 0.0f) * Vector3.forward;
             input = (mainCamera.transform.forward * inputHandler.move.y + mainCamera.transform.right * inputHandler.move.x);
 
-        //    if (inputHandler.sprint)
-        //        Run();
-        //    else
-        //        Walk();
+            if (inputHandler.sprint)
+                Run();
+            else
+                Walk();
         }
         else
         {
             input = Vector3.zero;
-        //    Idle();
+            Idle();
         }
 
-        //if (Grounded)
-        //{
-        //    anim.SetBool("FreeFall", false);
-        //    anim.SetBool("Jump", false);
+        if (Grounded)
+        {
+            anim.SetBool("FreeFall", false);
+            anim.SetBool("Jump", false);
 
-        //}
-        //else
-        //    anim.SetBool("FreeFall", true);
+        }
+        else
+            anim.SetBool("FreeFall", true);
     }
     public void InputInteractions()
     {
@@ -126,7 +130,6 @@ public class PlayerController : MonoBehaviour
         {
             if (inputHandler.interaction)
             {
-                Debug.Log("End Lvl");
                 GameManager.NextLevel();
             }
         }
@@ -136,7 +139,7 @@ public class PlayerController : MonoBehaviour
         if (value.isPressed && Grounded)
         {
             input += Mathf.Sqrt(-2f * Physics.gravity.y * jumpHeight) * Vector3.up;    
-            //jump.Execute(anim, true);
+            jump.Execute(anim, true);
         }
     }
     private void GroundedCheck()
@@ -149,17 +152,73 @@ public class PlayerController : MonoBehaviour
         anim.SetBool("Grounded", Grounded);
     }
 
-    //private void Idle() TO ENABLE, WHEN ANIMATIONS WILL BE READY
-    //{
-    //    movement.Execute(anim, 0f, 0.1f, Time.deltaTime);
-    //}
-    //private void Walk()
-    //{
-    //    movement.Execute(anim, 0.5f, 0.1f, Time.deltaTime);
-    //}
-    //private void Run()
-    //{
-    //    movement.Execute(anim, 1f, 0.1f, Time.deltaTime);
-    //}
+    private void Idle()
+    {
+        movement.Execute(anim, 0f, 0.1f, Time.deltaTime);
+    }
+    private void Walk()
+    {
+        movement.Execute(anim, 0.5f, 0.1f, Time.deltaTime);
+    }
+    private void Run()
+    {
+        movement.Execute(anim, 1f, 0.1f, Time.deltaTime);
+    }
+    private float _cinemachineTargetYaw;
+    private float _cinemachineTargetPitch;
+    private GameObject CinemachineCameraTarget;
+    private const float _threshold = 0.01f;
+    public bool LockCameraPosition = false;
+    public float CameraAngleOverride = 0.0f;
+    [Tooltip("How far in degrees can you move the camera up")]
+    public float TopClamp = 70.0f;
+    [Tooltip("How far in degrees can you move the camera down")]
+    public float BottomClamp = -30.0f;
+
+    public void CameraRotation()
+    {
+        if (inputHandler.look.sqrMagnitude >= _threshold && !LockCameraPosition)
+        {
+            float deltaTimeMultiplier = 2.0f;
+
+            _cinemachineTargetYaw += inputHandler.look.x * deltaTimeMultiplier;
+            _cinemachineTargetPitch += inputHandler.look.y * deltaTimeMultiplier;
+        }
+        _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
+        _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
+
+        CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride,
+            _cinemachineTargetYaw, 0.0f);
+    }
+
+    private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
+    {
+        if (lfAngle < -360f) lfAngle += 360f;
+        if (lfAngle > 360f) lfAngle -= 360f;
+        return Mathf.Clamp(lfAngle, lfMin, lfMax);
+    }
+
+    
+
+    float cameraDistance;
+    CinemachineComponentBase componentBase;
+    public CinemachineVirtualCamera VirtualCamera;
+
+
+    private void CameraZoom()
+    {
+        if (inputHandler.zoom != 0)
+        {
+            cameraDistance = inputHandler.zoom * 0.001f;
+            if (componentBase is Cinemachine3rdPersonFollow)
+            {
+                (componentBase as Cinemachine3rdPersonFollow).CameraDistance -= cameraDistance;
+                if ((componentBase as Cinemachine3rdPersonFollow).CameraDistance < 1)
+                    (componentBase as Cinemachine3rdPersonFollow).CameraDistance = 1;
+                else if ((componentBase as Cinemachine3rdPersonFollow).CameraDistance > 10)
+                   ((componentBase as Cinemachine3rdPersonFollow).CameraDistance) = 10;
+            }
+        }
+    }
 
 }
