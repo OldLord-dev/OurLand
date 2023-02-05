@@ -7,6 +7,8 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField]
+    GameObject fakePlane;
+    [SerializeField]
     private LayerMask GroundLayers;
     private AnimationCommand jump, pickUp, attacking;
     private AnimationMovement movement;
@@ -23,7 +25,7 @@ public class PlayerController : MonoBehaviour
     [Range(0.0f, 0.3f)]
     public float RotationSmoothTime = 0.12f;
     private Animator anim;
-    bool isIntroDone = true;
+    bool isIntroDone = false;
     float targetSpeed;
     public CustomEvent test;
     private GameObject player;
@@ -34,7 +36,7 @@ public class PlayerController : MonoBehaviour
         pickUp = new PickUp();
         movement = new BlendMove();
         componentBase = VirtualCamera.GetCinemachineComponent(CinemachineCore.Stage.Body);
-        capsuleCollider=GetComponent<CapsuleCollider>();
+        capsuleCollider= player.GetComponent<CapsuleCollider>();
     }
     void Awake()
     {
@@ -48,6 +50,7 @@ public class PlayerController : MonoBehaviour
             player = GameObject.FindGameObjectWithTag("Player");
         }
         CinemachineCameraTarget = GameObject.FindGameObjectWithTag("PlayerCameraRoot");
+        Debug.Log(CinemachineCameraTarget);
         rb = player.GetComponent<Rigidbody>();
         inputHandler = GetComponent<InputHandler>();
         anim = player.GetComponent<Animator>();
@@ -55,10 +58,16 @@ public class PlayerController : MonoBehaviour
     }
     float targetRotation;
     private float _rotationVelocity;
+    [SerializeField]
+    private CinemachineVirtualCamera virtualCamera;
     public void OnIntroDone()
     {
         rb.isKinematic = false;
         capsuleCollider.enabled = true;
+        anim.applyRootMotion = false;
+        isIntroDone = true;
+        virtualCamera.Follow = CinemachineCameraTarget.transform;
+        fakePlane.SetActive(false);
 
     }
     private void Update()
@@ -130,13 +139,16 @@ public class PlayerController : MonoBehaviour
     }
     public void InputInteractions()
     {
-        if (inputHandler.interaction)
+        if (inputHandler.interaction && anim.GetBool("CanPickUp"))
         {
-           // test.Occurred();            
+            pickUp.Execute(anim, inputHandler.interaction);
+           
+            input = Vector3.zero;
         }
+        
         if (anim.GetBool("EndLevel"))
         {
-            if (inputHandler.interaction)
+            if (inputHandler.interaction&& anim.GetBool("DoneLvl"))
             {
                 GameManager.NextLevel();
             }
