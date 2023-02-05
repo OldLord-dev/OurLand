@@ -12,15 +12,15 @@ public class InGameUI : MonoBehaviour
     [SerializeField]
     private TMP_Text dropletCounter;
     [SerializeField]
-
+    private CanvasRenderer interactMessage;
 
     private void HideElement(CanvasRenderer element)
     {
-        element.SetAlpha(1f);
+        element.gameObject.SetActive(false);
     }
     private void ShowElement(CanvasRenderer element)
     {
-        element.SetAlpha(0f);
+        element.gameObject.SetActive(true);
     }
 
     public void SetHearts(int count)
@@ -41,5 +41,27 @@ public class InGameUI : MonoBehaviour
     public void SetDroplets(int count, int limit)
     {
         dropletCounter.text = count + "/" + limit;
+    }
+    public void ToggleInteractMessage()
+    {
+        if (interactMessage.gameObject.activeInHierarchy)
+        {
+            HideElement(interactMessage);
+        }
+        else
+        {
+            ShowElement(interactMessage);
+        }
+    }
+    public void ToggleInteractMessage(bool on)
+    {
+        if (on)
+        {
+            ShowElement(interactMessage);
+        }
+        else
+        {
+            HideElement(interactMessage);
+        }
     }
 }
