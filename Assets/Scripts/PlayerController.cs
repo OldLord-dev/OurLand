@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour
     GameObject fakePlane;
     [SerializeField]
     private LayerMask GroundLayers;
-    private AnimationCommand jump, pickUp, attacking;
+    private AnimationCommand jump, pickUp, attacking, pickUp2;
     private AnimationMovement movement;
     private Rigidbody rb;
     private float speed = 3f;
@@ -29,10 +29,12 @@ public class PlayerController : MonoBehaviour
     public CustomEvent test;
     private GameObject player;
     private CapsuleCollider capsuleCollider;
+    Scene scene;//= SceneManager.GetActiveScene();
     private void Start()
     {
         jump = new Jump();
         pickUp = new PickUp();
+        pickUp2 = new PickUp2();
         movement = new BlendMove();
         componentBase = VirtualCamera.GetCinemachineComponent(CinemachineCore.Stage.Body);
         capsuleCollider= player.GetComponent<CapsuleCollider>();
@@ -148,8 +150,11 @@ public class PlayerController : MonoBehaviour
             pickUp.Execute(anim, inputHandler.interaction);
            
             input = Vector3.zero;
+        }else if (inputHandler.interaction && anim.GetBool("CanPickUp")&& scene.name != "MainScene")
+        {
+            pickUp2.Execute(anim, inputHandler.interaction);
         }
-        
+
         //if (anim.GetBool("EndLevel"))
         //{
         //    if (inputHandler.interaction&& anim.GetBool("DoneLvl"))

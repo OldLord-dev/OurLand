@@ -31,12 +31,20 @@ public class PlayerTrigger : MonoBehaviour
             anim.SetBool("CanPickUp",true);
 
         }
+        if (other.CompareTag("Hole2"))
+        {
+            anim.SetBool("CanPickUp", true);
+        }
 
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Seed"))
+        {
+            anim.SetBool("CanPickUp", false);
+        }
+        if (other.CompareTag("Hole2"))
         {
             anim.SetBool("CanPickUp", false);
         }

@@ -18,7 +18,13 @@ public class PickUp : AnimationCommand
     }
 }
 
-
+public class PickUp2 : AnimationCommand
+{
+    public override void Execute(Animator anim, bool state)
+    {
+        anim.SetBool("PickUp2", state);
+    }
+}
 
 public class DoNothing : AnimationCommand
 {
