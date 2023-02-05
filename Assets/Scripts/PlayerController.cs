@@ -23,7 +23,7 @@ public class PlayerController : MonoBehaviour
     [Range(0.0f, 0.3f)]
     public float RotationSmoothTime = 0.12f;
     private Animator anim;
-    bool isIntroDone = false;
+    bool isIntroDone = true;
     float targetSpeed;
     public CustomEvent test;
     private GameObject player;
