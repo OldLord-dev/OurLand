@@ -14,7 +14,6 @@ public class HoleAppear : MonoBehaviour
     }
     public void StartDiggingGround()
     {
-        Debug.Log("KOPIEMY");
         anim.SetTrigger("IntroCome");
     }
     public void RootCome()

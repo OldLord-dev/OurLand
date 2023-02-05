@@ -6,7 +6,7 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     [SerializeField]
-    private CustomEvent rootComming;
+    private CustomEvent rootComming,IntroDone;
     private CinemachineVirtualCamera virtualCamera;
     private GameObject cinemachineCameraTarget;
 
@@ -18,7 +18,9 @@ public class CameraController : MonoBehaviour
 
     public void OnIntroDone()
     {
+        if(virtualCamera != null)
         virtualCamera.Follow = cinemachineCameraTarget.transform;
+        IntroDone.Occurred();
     }
     public void OnRootCome()
     {

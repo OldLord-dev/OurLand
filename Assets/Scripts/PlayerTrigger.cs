@@ -13,7 +13,6 @@ public class PlayerTrigger : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        //Debug.Log(other);
         if (other.CompareTag("Water"))
         {
             collectedWater++;
@@ -23,10 +22,42 @@ public class PlayerTrigger : MonoBehaviour
         }
         if (other.CompareTag("End") && collectedWater==5)
         {
+            other.gameObject.GetComponent<Animator>().SetTrigger("OpenGate");
             anim.SetBool("EndLevel", true);
         }
+        if (other.CompareTag("Seed"))
+        {
+            coll = other;
+            anim.SetBool("CanPickUp",true);
+
+        }
+
     }
 
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Seed"))
+        {
+            anim.SetBool("CanPickUp", false);
+        }
+    }
+    Collider coll;
+    [SerializeField]
+    private Transform leftHandTransform;
+    public void OnGrabAnimation()
+    {
+        coll.gameObject.transform.position = leftHandTransform.position;
+        coll.gameObject.transform.position = coll.ClosestPoint(coll.gameObject.transform.position) - Vector3.up * 0.1f;
+        coll.gameObject.transform.SetParent(leftHandTransform, true);
+
+    }
+    public void AnimationDone()
+    {
+        anim.SetBool("PickUp", false);
+        anim.SetBool("CanPickUp", false);
+        //coll.gameObject.transform.parent.DetachChildren();
+        //coll.gameObject.SetActive(false);
+    }
     public void RootCome()
     {
         anim.SetTrigger("IntroEnter");

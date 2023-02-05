@@ -7,6 +7,7 @@ public class AnimationEventListener : MonoBehaviour
     // Start is called before the first frame update
     public void OnAnimationEnd()
     {
+        GameManager.WaterCollected();
         gameObject.SetActive(false);
     }
 
